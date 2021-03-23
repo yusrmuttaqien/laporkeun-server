@@ -33,7 +33,7 @@ const Pengguna = db.define(
     },
   },
   {
-    createdAt: false,
+    createdAt: 'date_akun',
     updatedAt: false,
   }
 );
