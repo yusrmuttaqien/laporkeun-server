@@ -1,20 +1,24 @@
 const Sequelize = require("sequelize");
 const db = require("./../config/database");
 
-const Pengguna = db.define(
-  "pengguna",
+const Petugas = db.define(
+  "petugas",
   {
-    NIK: {
-      type: Sequelize.STRING,
+    id_petugas: {
+      type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
-    password: {
-      type: Sequelize.TEXT,
+    name_petugas: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    name_pengguna: {
-      type: Sequelize.STRING,
+    date_akun: {
+      type: Sequelize.DATEONLY,
+      allowNull: false,
+    },
+    password: {
+      type: Sequelize.TEXT,
       allowNull: false,
     },
     telp: {
@@ -26,11 +30,7 @@ const Pengguna = db.define(
     id_role: {
       type: Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 2,
-    },
-    date_akun: {
-      type: Sequelize.DATEONLY,
-      allowNull: false,
+      defaultValue: 3,
     },
   },
   {
@@ -39,4 +39,4 @@ const Pengguna = db.define(
   }
 );
 
-module.exports = Pengguna;
+module.exports = Petugas;

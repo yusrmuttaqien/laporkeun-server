@@ -19,12 +19,9 @@ db.authenticate()
   .catch((err) => console.log(err));
 
 // Routes group
-// app.post("/", (req, res) => {
-//   if (req.body.name === "Yusril") {
-//     res.json({ notify: "It's me Mario" });
-//   } else res.sendStatus(500);
-// });
 app.use("/pengguna", require("./routes/Pengguna"));
+app.use("/auth", require("./routes/Auth"));
+app.use("/laporan", require("./routes/Laporan"));
 
 // PORT
-app.listen(PORT, () => "Online and fine");
+app.listen(PORT, () => "Online and fine, laporkeun! rede to go");
