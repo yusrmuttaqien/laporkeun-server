@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: false }));
 // CORS
 app.use(cors());
 
+// Static folder
+app.use(express.static("uploads"));
+
 // Test MySQL
 db.authenticate()
   .then(() => console.log("Database present!"))

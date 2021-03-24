@@ -6,6 +6,7 @@ const Report = db.define(
   {
     id_report: {
       type: Sequelize.INTEGER,
+      autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
@@ -15,7 +16,6 @@ const Report = db.define(
     },
     id_response: {
       type: Sequelize.INTEGER,
-      allowNull: false,
     },
     title: {
       type: Sequelize.STRING,
@@ -39,6 +39,7 @@ const Report = db.define(
     stat: {
       type: Sequelize.ENUM("Diterima", "Ditolak", "Menunggu"),
       allowNull: false,
+      defaultValue: "Menunggu",
     },
   },
   {

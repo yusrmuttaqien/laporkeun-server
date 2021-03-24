@@ -6,6 +6,7 @@ const Petugas = db.define(
   {
     id_petugas: {
       type: Sequelize.INTEGER,
+      autoIncrement: true,
       allowNull: false,
       primaryKey: true,
     },
