@@ -25,24 +25,59 @@ router.post("/buat", authenticateToken, (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
 
 router.get("/laporanku", authenticateToken, async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
   const { NIK } = req.authPengguna;
   Pengguna.hasMany(Report, { foreignKey: "NIK" });
   Report.belongsTo(Pengguna, { foreignKey: "NIK" });
 
-  const result = await Report.findAll({
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  var output = [];
+  var info = {};
+
+  if (endIndex < (await Report.count({ where: { NIK: NIK } }))) {
+    info.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+
+  if (startIndex > 0) {
+    info.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+
+  Report.findAll({
     where: { NIK: NIK },
     include: [Pengguna],
-  });
-
-  console.log(JSON.stringify(result));
-
-  return res.status(200).send({ notify: "I'm okay" });
+    limit: limit,
+    offset: startIndex,
+  })
+    .then((result) => {
+      for (var i = 0; i < result.length; i++) {
+        var pengguna = result[i].dataValues.pengguna.dataValues;
+        var report = result[i].dataValues;
+        delete report.pengguna;
+        output.push({ report, pengguna });
+      }
+      return res.status(200).send({
+        notify: `Berikut daftar laporan anda`,
+        output,
+        info,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send(err);
+    });
 });
 
 module.exports = router;
