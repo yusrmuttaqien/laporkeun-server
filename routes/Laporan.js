@@ -4,7 +4,6 @@ const router = express.Router();
 const db = require("./../config/database");
 const Report = require("./../models/Report");
 const Pengguna = require("./../models/Pengguna");
-const Petugas = require("./../models/Petugas");
 const Response = require("./../models/Response");
 const { authenticateToken } = require("./../functions");
 
