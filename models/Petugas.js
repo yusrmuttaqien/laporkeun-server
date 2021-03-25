@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("./../config/database");
 
 const Petugas = db.define(
-  "petugas",
+  "petugass",
   {
     id_petugas: {
       type: Sequelize.INTEGER,
@@ -37,6 +37,7 @@ const Petugas = db.define(
   {
     createdAt: "date_akun",
     updatedAt: false,
+    freezeTableName: true,
   }
 );
 

@@ -4,7 +4,7 @@ const db = require("./../config/database");
 const Response = db.define(
   "response",
   {
-    id_rsponse: {
+    id_response: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       allowNull: false,
@@ -24,11 +24,12 @@ const Response = db.define(
     },
     date_response: {
       type: Sequelize.DATEONLY,
+      defaultValue: Sequelize.NOW,
       allowNull: false,
     },
   },
   {
-    createdAt: "date_response",
+    createdAt: true,
     updatedAt: false,
   }
 );

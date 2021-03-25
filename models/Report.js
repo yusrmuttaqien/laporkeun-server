@@ -27,6 +27,7 @@ const Report = db.define(
     },
     date_report: {
       type: Sequelize.DATEONLY,
+      defaultValue: Sequelize.NOW,
       allowNull: false,
     },
     pic: {
@@ -43,7 +44,7 @@ const Report = db.define(
     },
   },
   {
-    createdAt: "date_report",
+    createdAt: true,
     updatedAt: false,
   }
 );

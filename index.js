@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5006;
 
 const app = express();
 const db = require("./config/database");
@@ -23,6 +23,7 @@ db.authenticate()
 
 // Routes group
 app.use("/pengguna", require("./routes/Pengguna"));
+app.use("/petugas", require("./routes/Petugas"));
 app.use("/auth", require("./routes/Auth"));
 app.use("/laporan", require("./routes/Laporan"));
 
