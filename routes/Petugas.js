@@ -59,12 +59,10 @@ router.post("/registrasi", authenticateToken, (req, res) => {
           });
         })
         .catch((err) => {
-          console.log(err);
           return res.status(500).send(err);
         });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -110,7 +108,6 @@ router.get("/list", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -128,7 +125,6 @@ router.post("/delete", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err)
       return res.status(500).send(err);
     });
 });

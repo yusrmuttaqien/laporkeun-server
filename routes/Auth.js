@@ -49,7 +49,6 @@ router.post("/masuk", (req, res) => {
       return res.status(400).send({ notify: "Nama tidak ditemukan" });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });

@@ -76,7 +76,6 @@ router.get("/laporanku", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -126,7 +125,6 @@ router.get("/laporanpublik", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -176,7 +174,6 @@ router.get("/laporanbaru", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -215,8 +212,6 @@ router.get("/tanggapanku", authenticateToken, async (req, res) => {
     order: [["createdAt", "DESC"]],
   })
     .then((result) => {
-      // console.log(result[0])
-      // console.log(result[0].petugass)
       for (var i = 0; i < result.length; i++) {
         var pengguna = result[i].pengguna;
         var report = result[i];
@@ -229,7 +224,6 @@ router.get("/tanggapanku", authenticateToken, async (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
@@ -257,12 +251,10 @@ router.post("/respon", authenticateToken, (req, res) => {
           });
         })
         .catch(() => {
-          console.log(err);
           return res.status(500).send(err);
         });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).send(err);
     });
 });
