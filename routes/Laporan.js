@@ -15,8 +15,7 @@ router.post("/buat", authenticateToken, (req, res) => {
     NIK: NIK,
     title: judulLaporan,
     report: isiLaporan,
-    // NOTE: Return pic as modified file name
-    // pic: pic,
+    pic: pic ? pic : null,
     vis: vis,
   })
     .then((report) => {
@@ -26,6 +25,7 @@ router.post("/buat", authenticateToken, (req, res) => {
       });
     })
     .catch((err) => {
+      console.log(err);
       return res.status(500).send(err);
     });
 });

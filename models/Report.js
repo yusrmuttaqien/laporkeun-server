@@ -31,7 +31,7 @@ const Report = db.define(
       allowNull: false,
     },
     pic: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
     },
     vis: {
       type: Sequelize.ENUM("Publik", "Privat"),

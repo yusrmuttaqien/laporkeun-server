@@ -18,10 +18,10 @@ const Pengguna = db.define(
       allowNull: false,
     },
     telp: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
     },
     pic: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
     },
     id_role: {
       type: Sequelize.INTEGER,
