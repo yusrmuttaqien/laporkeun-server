@@ -19,7 +19,7 @@ app.use(express.static("uploads"));
 // Test MySQL
 db.authenticate()
   .then(() => console.log("Database present!"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log(err, "Ey db nyalain dulu napa"));
 
 // Routes group
 app.use("/pengguna", require("./routes/Pengguna"));

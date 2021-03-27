@@ -301,6 +301,7 @@ router.get("/detailPetugas", authenticateToken, (req, res) => {
       return res.status(200).send({ notify: "OK", output: pengguna[0][0] });
     })
     .catch((err) => {
+      console.log(err)
       return res.status(500).send(err);
     });
 });
