@@ -46,7 +46,7 @@ router.post("/registrasi", authenticateToken, (req, res) => {
       const hashPassword = await bcrypt.hash(kataSandi, 10);
 
       await Petugas.create({
-        telp: telp.toString(),
+        telp: `${telp}`,
         password: hashPassword,
         name_petugas: name,
       })
@@ -112,15 +112,15 @@ router.get("/list", authenticateToken, async (req, res) => {
     });
 });
 
-router.post("/delete", authenticateToken, async (req, res) => {
-  const { id } = req.body;
+router.delete("/delete", authenticateToken, async (req, res) => {
+  const id = parseInt(req.query.id);
   await Petugas.destroy({
     where: {
       id_petugas: id,
     },
   })
     .then(() => {
-      return res.status(201).send({
+      return res.status(200).send({
         notify: `Akun berhasil dihapus`,
       });
     })

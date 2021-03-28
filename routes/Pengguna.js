@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 
 const db = require("./../config/database");
 const Pengguna = require("./../models/Pengguna");
+// const Petugas = require("./../models/Petugas");
 const { generateAccessToken } = require("./../functions");
 
 router.post("/registrasi", (req, res) => {

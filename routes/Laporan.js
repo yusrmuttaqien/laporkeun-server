@@ -20,7 +20,7 @@ router.post("/buat", authenticateToken, (req, res) => {
   })
     .then((report) => {
       return res.status(201).send({
-        notify: `Laporan anda berhasil dipubllikasikan!`,
+        notify: `Laporan anda berhasil dipublikasikan!`,
         report,
       });
     })
@@ -301,7 +301,44 @@ router.get("/detailPetugas", authenticateToken, (req, res) => {
       return res.status(200).send({ notify: "OK", output: pengguna[0][0] });
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      return res.status(500).send(err);
+    });
+});
+
+router.delete("/delete", authenticateToken, async (req, res) => {
+  const id = parseInt(req.query.id);
+  const foward = {};
+
+  await Report.findOne({ where: { id_report: id } })
+    .then(async (response) => {
+      const { pic, id_response } = response.dataValues;
+
+      if (pic || id_response) {
+        if (id_response) {
+          foward.id_response = id_response;
+          return res.status(304).send({
+            foward,
+          });
+        }
+
+        if (pic) {
+          foward.pic = pic;
+        }
+      }
+
+      await Report.destroy({
+        where: {
+          id_report: id,
+        },
+      });
+
+      return res.status(200).send({
+        notify: `Laporan berhasil dihapus`,
+        foward,
+      });
+    })
+    .catch((err) => {
       return res.status(500).send(err);
     });
 });
