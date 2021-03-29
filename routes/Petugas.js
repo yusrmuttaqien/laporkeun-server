@@ -46,7 +46,7 @@ router.post("/registrasi", authenticateToken, (req, res) => {
       const hashPassword = await bcrypt.hash(kataSandi, 10);
 
       await Petugas.create({
-        telp: `${telp}`,
+        telp: `0${telp}`,
         password: hashPassword,
         name_petugas: name,
       })

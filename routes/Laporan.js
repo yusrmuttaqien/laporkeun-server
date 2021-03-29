@@ -228,8 +228,67 @@ router.get("/tanggapanku", authenticateToken, async (req, res) => {
     });
 });
 
-router.post("/respon", authenticateToken, (req, res) => {
+router.get("/semuatanggapan", authenticateToken, async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  Report.hasMany(Response, { foreignKey: "id_report" });
+  Response.belongsTo(Report, { foreignKey: "id_report" });
+  const { id_petugas } = req.authPengguna;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  var output = [];
+  var info = {};
+
+  if (endIndex < (await Response.count())) {
+    info.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+
+  if (startIndex > 0) {
+    info.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+
+  Response.findAll({
+    include: [Report],
+    limit: limit,
+    offset: startIndex,
+    order: [["createdAt", "DESC"]],
+  })
+    .then((result) => {
+      for (var i = 0; i < result.length; i++) {
+        var pengguna = result[i].pengguna;
+        var report = result[i];
+        delete report.pengguna;
+        output.push({ report, pengguna });
+      }
+      return res.status(200).send({
+        output,
+        info,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).send(err);
+    });
+});
+
+router.post("/respon", authenticateToken, async (req, res) => {
   const datas = req.body;
+
+  const isResponsed = await Response.findOne({
+    where: { id_report: datas.id_report },
+  });
+
+  if (isResponsed) {
+    return res.status(409).send({
+      notify: `Sudah direspon petugas lain`,
+    });
+  }
 
   Response.create({
     ...datas,
@@ -317,7 +376,7 @@ router.delete("/delete", authenticateToken, async (req, res) => {
       if (pic || id_response) {
         if (id_response) {
           foward.id_response = id_response;
-          return res.status(304).send({
+          return res.status(409).send({
             foward,
           });
         }
