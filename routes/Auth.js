@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 const db = require("./../config/database");
 const Role = require("./../models/Role");
-const { generateAccessToken } = require("./../functions");
+const { generateAccessToken, authenticateToken } = require("./../functions");
 
 router.post("/masuk", (req, res) => {
   const { kataSandi, name } = req.body;
@@ -51,6 +51,10 @@ router.post("/masuk", (req, res) => {
     .catch((err) => {
       return res.status(500).send(err);
     });
+});
+
+router.get("/check", authenticateToken, (req, res) => {
+  console.log(req.authPengguna);
 });
 
 module.exports = router;

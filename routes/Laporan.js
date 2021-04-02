@@ -23,7 +23,7 @@ const sortBy = (sort) => {
 };
 
 router.post("/buat", authenticateToken, (req, res) => {
-  const { judulLaporan, isiLaporan, pic, vis } = req.body;
+  const { judulLaporan, isiLaporan, pic, vis, loc } = req.body;
   const { NIK } = req.authPengguna;
 
   Report.create({
@@ -32,6 +32,7 @@ router.post("/buat", authenticateToken, (req, res) => {
     report: isiLaporan,
     pic: pic ? pic : null,
     vis: vis,
+    loc: loc
   })
     .then((report) => {
       return res.status(201).send({
