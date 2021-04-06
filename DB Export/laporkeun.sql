@@ -14,27 +14,53 @@
 
 
 -- Dumping database structure for laporkeun
-CREATE DATABASE IF NOT EXISTS `laporkeun` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+CREATE DATABASE IF NOT EXISTS `laporkeun` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `laporkeun`;
 
 -- Dumping structure for procedure laporkeun.availibility
 DELIMITER //
-//
+CREATE PROCEDURE `availibility`(
+	IN `name_pengguna` VARCHAR(255),
+	IN `nik` VARCHAR(255)
+)
+BEGIN
+	SELECT * FROM penggunas WHERE penggunas.name_pengguna = name_pengguna;
+	SELECT * FROM penggunas WHERE penggunas.NIK = nik;
+	SELECT * FROM petugass WHERE petugass.name_petugas = name_pengguna;
+END//
 DELIMITER ;
 
 -- Dumping structure for procedure laporkeun.detailReport
 DELIMITER //
-//
+CREATE PROCEDURE `detailReport`(
+	IN `id` INT(255),
+	IN `nik` VARCHAR(255)
+)
+BEGIN
+	SELECT rep.id_report, pet.id_petugas, res.id_response, rep.pic, rep.title, rep.report, rep.date_report, res.date_response, rep.vis, rep.stat, res.response, pet.name_petugas, pen. name_pengguna, pen.NIK, rep.loc FROM penggunas as pen LEFT JOIN reports as rep ON pen.NIK = rep.NIK LEFT JOIN responses as res ON rep.id_response = res.id_response LEFT JOIN petugass as pet ON res.id_petugas = pet.id_petugas WHERE rep.id_report = id AND pen.NIK = nik; 
+END//
 DELIMITER ;
 
 -- Dumping structure for procedure laporkeun.detailReportPetugas
 DELIMITER //
-//
+CREATE PROCEDURE `detailReportPetugas`(
+	IN `id` INT(255),
+	IN `petugas` INT(255)
+)
+BEGIN
+	SELECT rep. id_report, pet. id_petugas, res.id_response, rep.pic, rep.title, rep. report, rep. date_report, res.date_response, rep.vis, rep.stat, res. response, pet. name_petugas, pen. name_pengguna, pen.NIK FROM penggunas as pen LEFT JOIN reports as rep ON pen.NIK = rep.NIK LEFT JOIN responses as res ON rep.id_response = res.id_response LEFT JOIN petugass as pet ON res.id_petugas = pet.id_petugas WHERE rep.id_report = id AND pet.id_petugas = petugas; 
+END//
 DELIMITER ;
 
 -- Dumping structure for procedure laporkeun.finduser
 DELIMITER //
-//
+CREATE PROCEDURE `finduser`(
+	IN `name` VARCHAR(255)
+)
+BEGIN
+	SELECT * FROM penggunas WHERE penggunas.name_pengguna = name;
+	SELECT * FROM petugass WHERE petugass.name_petugas = name;
+END//
 DELIMITER ;
 
 -- Dumping structure for table laporkeun.penggunas
@@ -49,7 +75,11 @@ CREATE TABLE IF NOT EXISTS `penggunas` (
   PRIMARY KEY (`NIK`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Data exporting was unselected.
+-- Dumping data for table laporkeun.penggunas: ~1 rows (approximately)
+/*!40000 ALTER TABLE `penggunas` DISABLE KEYS */;
+INSERT INTO `penggunas` (`name_pengguna`, `password`, `NIK`, `telp`, `pic`, `id_role`, `date_akun`) VALUES
+	('Yusril', '$2b$10$tTr3d9AnRmAyN/NBXwb/DOznWqloMGO3C5AYDhHvhdBNv3sJTv4Bm', '8798798798797898', '82245494050', 'Yusril_1617732600718.WIN_20210407_01_09_23_Pro,jpg', 2, '2021-03-23');
+/*!40000 ALTER TABLE `penggunas` ENABLE KEYS */;
 
 -- Dumping structure for table laporkeun.petugass
 CREATE TABLE IF NOT EXISTS `petugass` (
@@ -64,7 +94,11 @@ CREATE TABLE IF NOT EXISTS `petugass` (
   PRIMARY KEY (`id_petugas`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
 
--- Data exporting was unselected.
+-- Dumping data for table laporkeun.petugass: ~0 rows (approximately)
+/*!40000 ALTER TABLE `petugass` DISABLE KEYS */;
+INSERT INTO `petugass` (`id_petugas`, `name_petugas`, `date_akun`, `password`, `telp`, `pic`, `id_role`, `createdAt`) VALUES
+	(22, 'laporkeun', '2021-03-28', '$2b$10$PpFUkURC1z7PdpUPTAlNvuaGHPl8zVebc1ZWNzNW7TXaWZIVmNTKy', NULL, NULL, 1, '2021-03-28 20:16:35');
+/*!40000 ALTER TABLE `petugass` ENABLE KEYS */;
 
 -- Dumping structure for table laporkeun.reports
 CREATE TABLE IF NOT EXISTS `reports` (
@@ -77,11 +111,14 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `pic` text DEFAULT NULL,
   `vis` enum('Publik','Privat') NOT NULL,
   `stat` enum('Diterima','Ditolak','Menunggu') NOT NULL,
+  `loc` varchar(255) NOT NULL DEFAULT '',
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id_report`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=utf8mb4;
 
--- Data exporting was unselected.
+-- Dumping data for table laporkeun.reports: ~0 rows (approximately)
+/*!40000 ALTER TABLE `reports` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reports` ENABLE KEYS */;
 
 -- Dumping structure for table laporkeun.responses
 CREATE TABLE IF NOT EXISTS `responses` (
@@ -92,9 +129,11 @@ CREATE TABLE IF NOT EXISTS `responses` (
   `date_response` date NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id_response`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4;
 
--- Data exporting was unselected.
+-- Dumping data for table laporkeun.responses: ~0 rows (approximately)
+/*!40000 ALTER TABLE `responses` DISABLE KEYS */;
+/*!40000 ALTER TABLE `responses` ENABLE KEYS */;
 
 -- Dumping structure for table laporkeun.roles
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -103,7 +142,13 @@ CREATE TABLE IF NOT EXISTS `roles` (
   PRIMARY KEY (`id_role`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
--- Data exporting was unselected.
+-- Dumping data for table laporkeun.roles: ~3 rows (approximately)
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` (`id_role`, `role`) VALUES
+	(1, 'admin'),
+	(2, 'pengguna'),
+	(3, 'petugas');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
