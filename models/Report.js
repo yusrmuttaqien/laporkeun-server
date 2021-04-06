@@ -42,6 +42,10 @@ const Report = db.define(
       allowNull: false,
       defaultValue: "Menunggu",
     },
+    loc: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   {
     createdAt: true,

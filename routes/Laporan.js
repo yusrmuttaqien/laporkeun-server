@@ -7,8 +7,23 @@ const Pengguna = require("./../models/Pengguna");
 const Response = require("./../models/Response");
 const { authenticateToken } = require("./../functions");
 
+const sortBy = (sort) => {
+  switch (sort) {
+    case "Date DESC":
+      return ["createdAt", "DESC"];
+    case "Date ASC":
+      return ["createdAt", "ASC"];
+    case "stat Menunggu":
+      return ["stat", "DESC"];
+    case "stat Diterima":
+      return ["stat", "ASC"];
+    default:
+      return null;
+  }
+};
+
 router.post("/buat", authenticateToken, (req, res) => {
-  const { judulLaporan, isiLaporan, pic, vis } = req.body;
+  const { judulLaporan, isiLaporan, pic, vis, loc } = req.body;
   const { NIK } = req.authPengguna;
 
   Report.create({
@@ -17,10 +32,11 @@ router.post("/buat", authenticateToken, (req, res) => {
     report: isiLaporan,
     pic: pic ? pic : null,
     vis: vis,
+    loc: loc
   })
     .then((report) => {
       return res.status(201).send({
-        notify: `Laporan anda berhasil dipubllikasikan!`,
+        notify: `Laporan anda berhasil dipublikasikan!`,
         report,
       });
     })
@@ -33,7 +49,9 @@ router.post("/buat", authenticateToken, (req, res) => {
 router.get("/laporanku", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
   const { NIK } = req.authPengguna;
+
   Pengguna.hasMany(Report, { foreignKey: "NIK" });
   Report.belongsTo(Pengguna, { foreignKey: "NIK" });
 
@@ -61,7 +79,7 @@ router.get("/laporanku", authenticateToken, async (req, res) => {
     include: [Pengguna],
     limit: limit,
     offset: startIndex,
-    order: [["createdAt", "DESC"]],
+    order: [sortBy(sort)],
   })
     .then((result) => {
       for (var i = 0; i < result.length; i++) {
@@ -83,6 +101,8 @@ router.get("/laporanku", authenticateToken, async (req, res) => {
 router.get("/laporanpublik", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
+
   Pengguna.hasMany(Report, { foreignKey: "NIK" });
   Report.belongsTo(Pengguna, { foreignKey: "NIK" });
 
@@ -110,7 +130,7 @@ router.get("/laporanpublik", authenticateToken, async (req, res) => {
     include: [Pengguna],
     limit: limit,
     offset: startIndex,
-    order: [["createdAt", "DESC"]],
+    order: [sortBy(sort)],
   })
     .then((result) => {
       for (var i = 0; i < result.length; i++) {
@@ -132,6 +152,8 @@ router.get("/laporanpublik", authenticateToken, async (req, res) => {
 router.get("/laporanbaru", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
+
   Pengguna.hasMany(Report, { foreignKey: "NIK" });
   Report.belongsTo(Pengguna, { foreignKey: "NIK" });
 
@@ -159,7 +181,7 @@ router.get("/laporanbaru", authenticateToken, async (req, res) => {
     include: [Pengguna],
     limit: limit,
     offset: startIndex,
-    order: [["createdAt", "ASC"]],
+    order: [sortBy(sort)],
   })
     .then((result) => {
       for (var i = 0; i < result.length; i++) {
@@ -181,6 +203,8 @@ router.get("/laporanbaru", authenticateToken, async (req, res) => {
 router.get("/tanggapanku", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
+
   Report.hasMany(Response, { foreignKey: "id_report" });
   Response.belongsTo(Report, { foreignKey: "id_report" });
   const { id_petugas } = req.authPengguna;
@@ -209,7 +233,7 @@ router.get("/tanggapanku", authenticateToken, async (req, res) => {
     include: [Report],
     limit: limit,
     offset: startIndex,
-    order: [["createdAt", "DESC"]],
+    order: [sortBy(sort)],
   })
     .then((result) => {
       for (var i = 0; i < result.length; i++) {
@@ -228,8 +252,68 @@ router.get("/tanggapanku", authenticateToken, async (req, res) => {
     });
 });
 
-router.post("/respon", authenticateToken, (req, res) => {
+router.get("/semuatanggapan", authenticateToken, async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
+
+  Report.hasMany(Response, { foreignKey: "id_report" });
+  Response.belongsTo(Report, { foreignKey: "id_report" });
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  var output = [];
+  var info = {};
+
+  if (endIndex < (await Response.count())) {
+    info.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+
+  if (startIndex > 0) {
+    info.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+
+  Response.findAll({
+    include: [Report],
+    limit: limit,
+    offset: startIndex,
+    order: [sortBy(sort)],
+  })
+    .then((result) => {
+      for (var i = 0; i < result.length; i++) {
+        var pengguna = result[i].pengguna;
+        var report = result[i];
+        delete report.pengguna;
+        output.push({ report, pengguna });
+      }
+      return res.status(200).send({
+        output,
+        info,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).send(err);
+    });
+});
+
+router.post("/respon", authenticateToken, async (req, res) => {
   const datas = req.body;
+
+  const isResponsed = await Response.findOne({
+    where: { id_report: datas.id_report },
+  });
+
+  if (isResponsed) {
+    return res.status(409).send({
+      notify: `Sudah direspon petugas lain`,
+    });
+  }
 
   Response.create({
     ...datas,
@@ -299,6 +383,44 @@ router.get("/detailPetugas", authenticateToken, (req, res) => {
         });
       }
       return res.status(200).send({ notify: "OK", output: pengguna[0][0] });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send(err);
+    });
+});
+
+router.delete("/delete", authenticateToken, async (req, res) => {
+  const id = parseInt(req.query.id);
+  const foward = {};
+
+  await Report.findOne({ where: { id_report: id } })
+    .then(async (response) => {
+      const { pic, id_response } = response.dataValues;
+
+      if (pic || id_response) {
+        if (id_response) {
+          foward.id_response = id_response;
+          return res.status(409).send({
+            foward,
+          });
+        }
+
+        if (pic) {
+          foward.pic = pic;
+        }
+      }
+
+      await Report.destroy({
+        where: {
+          id_report: id,
+        },
+      });
+
+      return res.status(200).send({
+        notify: `Laporan berhasil dihapus`,
+        foward,
+      });
     })
     .catch((err) => {
       return res.status(500).send(err);

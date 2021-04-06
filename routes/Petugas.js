@@ -8,6 +8,21 @@ const db = require("./../config/database");
 const Petugas = require("./../models/Petugas");
 const { generateAccessToken, authenticateToken } = require("./../functions");
 
+const sortBy = (sort) => {
+  switch (sort) {
+    case "Date DESC":
+      return ["createdAt", "DESC"];
+    case "Date ASC":
+      return ["createdAt", "ASC"];
+    case "stat Menunggu":
+      return ["stat", "DESC"];
+    case "stat Diterima":
+      return ["stat", "ASC"];
+    default:
+      return null;
+  }
+};
+
 router.post("/registrasi", authenticateToken, (req, res) => {
   const { kataSandi, name, telp } = req.body;
 
@@ -46,7 +61,7 @@ router.post("/registrasi", authenticateToken, (req, res) => {
       const hashPassword = await bcrypt.hash(kataSandi, 10);
 
       await Petugas.create({
-        telp: telp.toString(),
+        telp: `0${telp}`,
         password: hashPassword,
         name_petugas: name,
       })
@@ -70,6 +85,7 @@ router.post("/registrasi", authenticateToken, (req, res) => {
 router.get("/list", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const sort = req.query.sort;
 
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -93,7 +109,7 @@ router.get("/list", authenticateToken, async (req, res) => {
   Petugas.findAll({
     limit: limit,
     offset: startIndex,
-    order: [["createdAt", "DESC"]],
+    order: [sortBy(sort)],
   })
     .then((result) => {
       for (var i = 0; i < result.length; i++) {
@@ -112,15 +128,15 @@ router.get("/list", authenticateToken, async (req, res) => {
     });
 });
 
-router.post("/delete", authenticateToken, async (req, res) => {
-  const { id } = req.body;
+router.delete("/delete", authenticateToken, async (req, res) => {
+  const id = parseInt(req.query.id);
   await Petugas.destroy({
     where: {
       id_petugas: id,
     },
   })
     .then(() => {
-      return res.status(201).send({
+      return res.status(200).send({
         notify: `Akun berhasil dihapus`,
       });
     })
